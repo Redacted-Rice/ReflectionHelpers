@@ -14,6 +14,11 @@ public class SimpleObject {
     public Map<Integer, String> map;
     public int[] array;
     public Integer[] wrappedArray;
+    public boolean boolField;
+    public String stringNoGetterSetter;
+    @SuppressWarnings("unused")
+    private int intPrivate;
+    public boolean boolSetterWithNoSet;
 
     public SimpleObject(String stringField, int intField) {
         this.setStringField(stringField);
@@ -101,5 +106,17 @@ public class SimpleObject {
 
     public Map<Integer, String> getMap() {
         return map;
+    }
+
+    public boolean isBoolField() {
+        return boolField;
+    }
+
+    public void setIntPrivate(int intPrivate) {
+        this.intPrivate = intPrivate;
+    }
+
+    public void boolSetterWithNoSet(boolean val) {
+        this.boolSetterWithNoSet = val;
     }
 }
