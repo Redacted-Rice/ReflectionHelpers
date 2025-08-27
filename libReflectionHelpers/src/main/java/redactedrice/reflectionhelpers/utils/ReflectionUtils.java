@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class ReflectionUtils {
+    private ReflectionUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Object getVariable(Object obj, String pathToGetterOrField)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
             NoSuchMethodException, SecurityException, NoSuchFieldException {
@@ -46,7 +50,7 @@ public class ReflectionUtils {
     }
 
     public static Object getFromGetter(Object obj, String fieldName)
-            throws IllegalAccessException, InvocationTargetException {
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         String capitalized = Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
 
         // Check for a public getter
@@ -54,11 +58,11 @@ public class ReflectionUtils {
         if (getter == null) {
             getter = tryGetMethodByName(obj, "is" + capitalized);
         }
-
-        if (getter != null) {
-            return getter.invoke(obj);
+        if (getter == null) {
+            throw new NoSuchMethodException();
         }
-        return null;
+
+        return getter.invoke(obj);
     }
 
     public static Object getFromField(Object obj, String fieldName) throws IllegalArgumentException,
@@ -85,7 +89,7 @@ public class ReflectionUtils {
         } else {
             // Not a function? Then its not supported here. use setField instead?
             // TODO: add support for these for a single val?
-            throw new NoSuchMethodException();
+            throw new IllegalArgumentException();
         }
     }
 
@@ -111,18 +115,18 @@ public class ReflectionUtils {
     }
 
     public static void setWithSetter(Object obj, String fieldName, Object val)
-            throws IllegalAccessException, InvocationTargetException {
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         String capitalized = Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
 
         // Check for a public getter
         Method setter = tryGetMethodByName(obj, "set" + capitalized, val);
         if (setter == null) {
-            setter = tryGetMethodByName(obj, capitalized, val);
+            setter = tryGetMethodByName(obj, fieldName, val);
         }
-
-        if (setter != null) {
-            setter.invoke(obj, val);
+        if (setter == null) {
+            throw new NoSuchMethodException();
         }
+        setter.invoke(obj, val);
     }
 
     public static void setWithField(Object obj, String fieldName, Object val)

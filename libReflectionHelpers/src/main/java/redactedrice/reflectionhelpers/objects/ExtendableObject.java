@@ -11,7 +11,14 @@ public class ExtendableObject {
     Object obj;
     HashMap<String, Object> attrMap;
 
-    public ExtendableObject(Object obj) {
+    public static ExtendableObject create(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        return new ExtendableObject(obj);
+    }
+
+    protected ExtendableObject(Object obj) {
         this.obj = obj;
         attrMap = new HashMap<>();
     }
@@ -24,7 +31,7 @@ public class ExtendableObject {
     public Object eoGet(String fieldName) {
         try {
             return ReflectionUtils.getFromGetter(obj, fieldName);
-        } catch (IllegalAccessException | InvocationTargetException e) {}
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {}
         try {
             return ReflectionUtils.getFromField(obj, fieldName);
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
@@ -38,7 +45,7 @@ public class ExtendableObject {
         if (foundObj == null) {
             foundObj = defaultVal;
         }
-        return defaultVal;
+        return foundObj;
     }
 
     public void eoSet(String fieldName, Object val) {
@@ -60,12 +67,24 @@ public class ExtendableObject {
         try {
             ReflectionUtils.setWithSetter(obj, fieldName, val);
             return true;
-        } catch (IllegalAccessException | InvocationTargetException e) {}
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {}
         try {
             ReflectionUtils.setWithField(obj, fieldName, val);
             return true;
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
                 | SecurityException e) {}
+        return false;
+    }
+
+    public Object getObject() {
+        return obj;
+    }
+
+    protected boolean setObject(Object obj) {
+        if (obj != null) {
+            this.obj = obj;
+            return true;
+        }
         return false;
     }
 }
