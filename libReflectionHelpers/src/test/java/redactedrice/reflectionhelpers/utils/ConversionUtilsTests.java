@@ -4,7 +4,6 @@ package redactedrice.reflectionhelpers.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -79,87 +78,132 @@ class ConversionUtilsTests {
         }
 
         assertIterableEquals(expectedByte,
-                ConversionUtils.convertPrimitiveArrayToStream(inputByte).toList());
+                ConversionUtils.convertPrimitiveArrayToStream(inputByte, byte.class).toList());
         assertIterableEquals(expectedByte,
-                ConversionUtils.convertPrimitiveArrayToStream((Object) inputByte).toList());
+                ConversionUtils.convertPrimitiveArrayToStream((Object) inputByte, byte.class).toList());
         assertIterableEquals(expectedByte,
-                ConversionUtils.convertArrayToStream(inputByte).toList());
+                ConversionUtils.convertArrayToStream(inputByte, byte.class).toList());
 
         assertIterableEquals(expectedShort,
-                ConversionUtils.convertPrimitiveArrayToStream(inputShort).toList());
+                ConversionUtils.convertPrimitiveArrayToStream(inputShort, short.class).toList());
         assertIterableEquals(expectedShort,
-                ConversionUtils.convertPrimitiveArrayToStream((Object) inputShort).toList());
+                ConversionUtils.convertPrimitiveArrayToStream((Object) inputShort, short.class).toList());
         assertIterableEquals(expectedShort,
-                ConversionUtils.convertArrayToStream(inputShort).toList());
+                ConversionUtils.convertArrayToStream(inputShort, short.class).toList());
 
         assertIterableEquals(expectedInt,
-                ConversionUtils.convertPrimitiveArrayToStream(inputInt).toList());
+                ConversionUtils.convertPrimitiveArrayToStream(inputInt, int.class).toList());
         assertIterableEquals(expectedInt,
-                ConversionUtils.convertPrimitiveArrayToStream((Object) inputInt).toList());
-        assertIterableEquals(expectedInt, ConversionUtils.convertArrayToStream(inputInt).toList());
+                ConversionUtils.convertPrimitiveArrayToStream((Object) inputInt, int.class).toList());
+        assertIterableEquals(expectedInt, ConversionUtils.convertArrayToStream(inputInt, int.class).toList());
 
         assertIterableEquals(expectedLong,
-                ConversionUtils.convertPrimitiveArrayToStream(inputLong).toList());
+                ConversionUtils.convertPrimitiveArrayToStream(inputLong, long.class).toList());
         assertIterableEquals(expectedLong,
-                ConversionUtils.convertPrimitiveArrayToStream((Object) inputLong).toList());
+                ConversionUtils.convertPrimitiveArrayToStream((Object) inputLong, long.class).toList());
         assertIterableEquals(expectedLong,
-                ConversionUtils.convertArrayToStream(inputLong).toList());
+                ConversionUtils.convertArrayToStream(inputLong, long.class).toList());
 
         assertIterableEquals(expectedFloat,
-                ConversionUtils.convertPrimitiveArrayToStream(inputFloat).toList());
+                ConversionUtils.convertPrimitiveArrayToStream(inputFloat, float.class).toList());
         assertIterableEquals(expectedFloat,
-                ConversionUtils.convertPrimitiveArrayToStream((Object) inputFloat).toList());
+                ConversionUtils.convertPrimitiveArrayToStream((Object) inputFloat, float.class).toList());
         assertIterableEquals(expectedFloat,
-                ConversionUtils.convertArrayToStream(inputFloat).toList());
+                ConversionUtils.convertArrayToStream(inputFloat, float.class).toList());
 
         assertIterableEquals(expectedDouble,
-                ConversionUtils.convertPrimitiveArrayToStream(inputDouble).toList());
+                ConversionUtils.convertPrimitiveArrayToStream(inputDouble, double.class).toList());
         assertIterableEquals(expectedDouble,
-                ConversionUtils.convertPrimitiveArrayToStream((Object) inputDouble).toList());
+                ConversionUtils.convertPrimitiveArrayToStream((Object) inputDouble, double.class).toList());
         assertIterableEquals(expectedDouble,
-                ConversionUtils.convertArrayToStream(inputDouble).toList());
+                ConversionUtils.convertArrayToStream(inputDouble, double.class).toList());
 
         assertIterableEquals(expectedBool,
-                ConversionUtils.convertPrimitiveArrayToStream(inputBool).toList());
+                ConversionUtils.convertPrimitiveArrayToStream(inputBool, boolean.class).toList());
         assertIterableEquals(expectedBool,
-                ConversionUtils.convertPrimitiveArrayToStream((Object) inputBool).toList());
+                ConversionUtils.convertPrimitiveArrayToStream((Object) inputBool, boolean.class).toList());
         assertIterableEquals(expectedBool,
-                ConversionUtils.convertArrayToStream(inputBool).toList());
+                ConversionUtils.convertArrayToStream(inputBool, boolean.class).toList());
 
         assertIterableEquals(expectedChar,
-                ConversionUtils.convertPrimitiveArrayToStream(inputChar).toList());
+                ConversionUtils.convertPrimitiveArrayToStream(inputChar, char.class).toList());
         assertIterableEquals(expectedChar,
-                ConversionUtils.convertPrimitiveArrayToStream((Object) inputChar).toList());
+                ConversionUtils.convertPrimitiveArrayToStream((Object) inputChar, char.class).toList());
         assertIterableEquals(expectedChar,
-                ConversionUtils.convertArrayToStream(inputChar).toList());
+                ConversionUtils.convertArrayToStream(inputChar, char.class).toList());
+    }
+    @Test
+    void convertPrimitiveArrayToStreamBadCases() {
+        String[] inputStr = {"th", "hr", "ro", "ow", "ws"};
+        
+        // Non array
+        assertEquals(0, ConversionUtils.convertPrimitiveArrayToStream(5, int.class).count());
+        assertEquals(0, ConversionUtils.convertPrimitiveArrayToStream(null, int.class).count());
+        // Not primitive
+        assertEquals(0, ConversionUtils.convertPrimitiveArrayToStream(inputStr, String.class).count());
+        assertEquals(0, ConversionUtils.convertPrimitiveArrayToStream(inputStr, char.class).count());
     }
 
     @Test
-    void convertToStream() {
-        String[] inputStr = {"t", "h", "r", "o", "w"};
+    void convertArrayToStream() {
+        String[] inputStr = {"th", "hr", "ro", "ow", "ws"};
 
         Collection<String> expectedStr = new LinkedList<>();
         for (int i = 0; i < inputStr.length; i++) {
             expectedStr.add(inputStr[i]);
         }
 
-        assertThrows(IllegalArgumentException.class,
-                () -> ConversionUtils.convertPrimitiveArrayToStream(inputStr));
+        assertEquals(0, ConversionUtils.convertArrayToStream(null, char.class).count());
+        assertEquals(0, ConversionUtils.convertArrayToStream("not an array", char.class).count());
+        // Wrong class
+        assertEquals(0, ConversionUtils.convertArrayToStream(inputStr, char.class).count());
 
         assertIterableEquals(expectedStr, ConversionUtils.convertArrayToStream(inputStr).toList());
+        assertIterableEquals(expectedStr, ConversionUtils.convertArrayToStream(inputStr, String.class).toList());
         assertIterableEquals(expectedStr,
-                ConversionUtils.convertArrayToStream((Object) inputStr).toList());
+                ConversionUtils.convertArrayToStream((Object) inputStr, String.class).toList());
+    }
 
-        assertIterableEquals(expectedStr, ConversionUtils.convertToStream(inputStr).toList());
+    @Test
+    void convertToStream() {
+        String[] inputStr = {"th", "hr", "ro", "ow", "ws"};
+
+        Collection<String> expectedStr = new LinkedList<>();
+        Collection<Object> expectedStrObj = new LinkedList<>();
+        for (int i = 0; i < inputStr.length; i++) {
+            expectedStr.add(inputStr[i]);
+            expectedStrObj.add(inputStr[i]);
+        }
+
+        assertEquals(0, ConversionUtils.convertToStream(null, char.class).count());
+        assertEquals(0, ConversionUtils.convertToStream("not an array", char.class).count());
+        // Wrong class
+        assertEquals(0, ConversionUtils.convertToStream(inputStr, char.class).count());
+
+        assertIterableEquals(expectedStr, ConversionUtils.convertToStream(inputStr, String.class).toList());
+        assertIterableEquals(expectedStrObj, ConversionUtils.convertToStream(inputStr).toList());
+
         assertIterableEquals(expectedStr,
+                ConversionUtils.convertToStream((Object) inputStr, String.class).toList());
+        assertIterableEquals(expectedStrObj,
+                ConversionUtils.convertToStream((Object) inputStr).toList());
+
+        assertIterableEquals(expectedStr, ConversionUtils.convertToStream(inputStr, String.class).toList());
+        assertIterableEquals(expectedStrObj, ConversionUtils.convertToStream(inputStr).toList());
+        
+        assertIterableEquals(expectedStr,
+                ConversionUtils.convertToStream(Arrays.asList(inputStr), String.class).toList());
+        assertIterableEquals(expectedStrObj,
                 ConversionUtils.convertToStream(Arrays.asList(inputStr)).toList());
 
         Map<Integer, String> inputMap = new HashMap<>();
         for (int i = 0; i < inputStr.length; i++) {
             inputMap.put(i, inputStr[i]);
         }
-        assertIterableEquals(expectedStr, ConversionUtils.convertToStream(inputMap).toList());
+        assertIterableEquals(expectedStr, ConversionUtils.convertToStream(inputMap, String.class).toList());
+        assertIterableEquals(expectedStrObj, ConversionUtils.convertToStream(inputMap).toList());
 
+        assertEquals("t", ConversionUtils.convertToStream("t", String.class).findFirst().get());
         assertEquals("t", ConversionUtils.convertToStream("t").findFirst().get());
     }
 }
