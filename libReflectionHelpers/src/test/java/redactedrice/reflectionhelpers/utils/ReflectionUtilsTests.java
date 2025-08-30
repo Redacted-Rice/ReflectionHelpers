@@ -55,9 +55,7 @@ class ReflectionUtilsTests {
     }
 
     @Test
-    void getVariable_badInputs()
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException, NoSuchFieldException {
+    void getVariable_badInputs() {
         SimpleObject so = new SimpleObject("test obj", 3);
 
         assertThrows(NoSuchFieldException.class, () -> ReflectionUtils.getVariable(so, ""));
@@ -127,8 +125,7 @@ class ReflectionUtilsTests {
 
     @Test
     void getMapVariableStream_badInputs()
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException, NoSuchFieldException {
+            throws IllegalArgumentException {
         SimpleObject so = new SimpleObject("test obj", 3);
         so.list.add(1);
         so.list.add(2);
@@ -152,7 +149,7 @@ class ReflectionUtilsTests {
     @Test
     void getFromGetter()
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException, NoSuchFieldException {
+            NoSuchMethodException, SecurityException {
         int expected = 3;
         SimpleObject so = new SimpleObject("test obj", 3);
         so.list.add(1);
@@ -179,8 +176,8 @@ class ReflectionUtilsTests {
 
     @Test
     void getFromField()
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException, NoSuchFieldException {
+            throws SecurityException, NoSuchFieldException, IllegalArgumentException, 
+            IllegalAccessException {
         int expected = 3;
         SimpleObject so = new SimpleObject("test obj", 3);
         so.list.add(1);
@@ -315,7 +312,7 @@ class ReflectionUtilsTests {
     @Test
     void setWithSetter()
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException, NoSuchFieldException {
+            NoSuchMethodException, SecurityException {
         SimpleObject so = new SimpleObject("test obj", 3);
 
         // objects
@@ -420,9 +417,7 @@ class ReflectionUtilsTests {
     }
 
     @Test
-    void invoke_badInput()
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException, NoSuchFieldException {
+    void invoke_badInput() {
         SimpleObject so = new SimpleObject("test obj", 3);
 
         assertThrows(NoSuchMethodException.class,

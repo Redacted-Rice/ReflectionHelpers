@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public class ReflectionUtils {
     private ReflectionUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new IllegalStateException("No constructor - utility class");
     }
 
     public static Object getVariable(Object obj, String pathToGetterOrField)
@@ -36,6 +36,8 @@ public class ReflectionUtils {
         return getMapVariableStream(obj, pathToGetterOrField, false);
     }
 
+    // This cast is safe as its upcasting to object and wildcard and we don't need to worry
+    // about primitives as they can't be used in a map
     @SuppressWarnings("unchecked")
     public static Stream<Object> getMapVariableStream(Object obj, String pathToGetterOrField,
             boolean valuesNotKeys)
@@ -59,14 +61,16 @@ public class ReflectionUtils {
             getter = tryGetMethodByName(obj, "is" + capitalized);
         }
         if (getter == null) {
-            throw new NoSuchMethodException();
+            throw new NoSuchMethodException("Did not find appropriate getter for get" + 
+            			capitalized + " or is" + capitalized);
         }
 
         return getter.invoke(obj);
     }
 
-    public static Object getFromField(Object obj, String fieldName) throws IllegalArgumentException,
-            IllegalAccessException, NoSuchFieldException, SecurityException {
+    public static Object getFromField(Object obj, String fieldName) 
+    		throws IllegalArgumentException, IllegalAccessException, 
+    		NoSuchFieldException, SecurityException  {
         return obj.getClass().getField(fieldName).get(obj);
     }
 
@@ -87,9 +91,9 @@ public class ReflectionUtils {
                     values);
             return method.invoke(owningObj, values);
         } else {
-            // Not a function? Then its not supported here. use setField instead?
-            // TODO: add support for these for a single val?
-            throw new IllegalArgumentException();
+            // Not a function. Should use setField instead
+            throw new IllegalArgumentException("Did not pass a function - \"" + pathToMethod + 
+            		"\". Should end with () or if its not a function should use get/setField instead");
         }
     }
 
@@ -124,7 +128,8 @@ public class ReflectionUtils {
             setter = tryGetMethodByName(obj, fieldName, val);
         }
         if (setter == null) {
-            throw new NoSuchMethodException();
+            throw new NoSuchMethodException("Did not find appropriate setter for set" + 
+        			capitalized + " or " + fieldName);
         }
         setter.invoke(obj, val);
     }
@@ -132,7 +137,9 @@ public class ReflectionUtils {
     public static void setWithField(Object obj, String fieldName, Object val)
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException,
             SecurityException {
-        obj.getClass().getField(fieldName).set(obj, val);
+    	// getField only returns public functions. This is incorrectly tagged as an
+    	// accessibility bypass by SonarQube
+        obj.getClass().getField(fieldName).set(obj, val); // NOSONAR
     }
 
     // Mainly intended as helper fns
@@ -140,11 +147,11 @@ public class ReflectionUtils {
             throws NoSuchMethodException {
         Method[] methods = obj.getClass().getMethods();
         for (Method m : methods) {
-            if (m.getName().equals(methodName) && doParamsMatch(obj, m.getParameters(), params)) {
+            if (m.getName().equals(methodName) && doParamsMatch(m.getParameters(), params)) {
                 return m;
             }
         }
-        throw new NoSuchMethodException();
+        throw new NoSuchMethodException("Failed to find method " + methodName);
     }
 
     public static Method tryGetMethodByName(Object obj, String methodName, Object... params) {
@@ -182,7 +189,7 @@ public class ReflectionUtils {
         }
     }
 
-    public static boolean doParamsMatch(Object obj, Parameter[] methodParams, Object... params) {
+    public static boolean doParamsMatch(Parameter[] methodParams, Object... params) {
         boolean match = true;
         if (methodParams.length != params.length) {
             match = false;

@@ -16,7 +16,7 @@ import org.mockito.MockedStatic;
 import redactedrice.reflectionhelpers.utils.ReflectionUtils;
 import support.SimpleObject;
 
-public class ExtendedObjectTests {
+class ExtendedObjectTests {
     public class Extended extends ExtendableObject {}
 
     @Test
