@@ -58,9 +58,9 @@ public class ConversionUtils {
         }
         return null;
     }
-    
+
     public static Stream<Object> convertToStream(Object obj) {
-    	return convertToStream(obj, Object.class);
+        return convertToStream(obj, Object.class);
     }
 
     public static <T> Stream<T> convertToStream(Object obj, Class<T> clazz) {
@@ -68,16 +68,16 @@ public class ConversionUtils {
             return Stream.empty();
         }
 
+        if (obj instanceof Stream<?> asStream) {
+            return asStream.filter(clazz::isInstance).map(clazz::cast);
+        }
+
         if (obj instanceof Collection<?>) {
-            return ((Collection<?>) obj).stream()
-                    .filter(clazz::isInstance)
-                    .map(clazz::cast);
+            return ((Collection<?>) obj).stream().filter(clazz::isInstance).map(clazz::cast);
         }
 
         if (obj instanceof Map<?, ?>) {
-            return ((Map<?, ?>) obj).values().stream()
-                    .filter(clazz::isInstance)
-                    .map(clazz::cast);
+            return ((Map<?, ?>) obj).values().stream().filter(clazz::isInstance).map(clazz::cast);
         }
 
         if (obj.getClass().isArray()) {
@@ -93,37 +93,38 @@ public class ConversionUtils {
 
     // We do check the types for safety before casting
     @SuppressWarnings("unchecked")
-	public static <T> Stream<T> convertArrayToStream(Object array, Class<T> clazz) {
-    	if (array == null || !array.getClass().isArray()) {
-    		return Stream.empty();
-    	}
+    public static <T> Stream<T> convertArrayToStream(Object array, Class<T> clazz) {
+        if (array == null || !array.getClass().isArray()) {
+            return Stream.empty();
+        }
         // Ensure the types match
         Class<?> primType = array.getClass().getComponentType();
-    	if (!clazz.isAssignableFrom(primType)) {
-    		return Stream.empty();
-    	}
+        if (!clazz.isAssignableFrom(primType)) {
+            return Stream.empty();
+        }
         if (array.getClass().getComponentType().isPrimitive()) {
             return convertPrimitiveArrayToStream(array, clazz);
         } else {
-        	// We already ensured its a matching array. We can safetly cast
+            // We already ensured its a matching array. We can safetly cast
             return Arrays.stream((T[]) array);
         }
     }
 
     // Suppress unchecked warning - we do check first
     @SuppressWarnings("unchecked")
-	public static <T> Stream<T> convertPrimitiveArrayToStream(Object primativeArray, Class<T> clazz) {
-    	// Ensure its an array
-    	if (primativeArray == null || !primativeArray.getClass().isArray()) {
-    		return Stream.empty();
-    	}
+    public static <T> Stream<T> convertPrimitiveArrayToStream(Object primativeArray,
+            Class<T> clazz) {
+        // Ensure its an array
+        if (primativeArray == null || !primativeArray.getClass().isArray()) {
+            return Stream.empty();
+        }
         // Ensure the types match
         Class<?> primType = primativeArray.getClass().getComponentType();
-    	if (!clazz.isAssignableFrom(primType)) {
-    		return Stream.empty();
-    	}
-    	// We confirmed its an array and T matches. We can now safely cast both to a 
-    	// primitive array and as a Stream<T>
+        if (!clazz.isAssignableFrom(primType)) {
+            return Stream.empty();
+        }
+        // We confirmed its an array and T matches. We can now safely cast both to a
+        // primitive array and as a Stream<T>
         if (primType == byte.class) {
             return (Stream<T>) convertPrimitiveArrayToStream((byte[]) primativeArray);
         } else if (primType == short.class) {
