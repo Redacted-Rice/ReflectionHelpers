@@ -358,6 +358,8 @@ class ReflectionUtilsTests {
         assertNull(ReflectionUtils.invoke(so, "setIntField()", 1));
         assertEquals(1, so.intField);
         assertEquals(1, ReflectionUtils.invoke(so, "getIntField()"));
+        // Test passing an empty array of args
+        assertEquals(1, ReflectionUtils.invoke(so, "getIntField()", new Object[] {}));
 
         // Test return vals
         assertTrue((boolean) ReflectionUtils.invoke(so, "setIntFieldReturn()", 7));

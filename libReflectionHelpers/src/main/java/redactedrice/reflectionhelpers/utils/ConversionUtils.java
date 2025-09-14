@@ -58,6 +58,14 @@ public class ConversionUtils {
         }
         return null;
     }
+    
+    public static Collection<Object> convertToCollection(Object obj) {
+    	return convertToCollection(obj, Object.class);
+    }
+
+    public static <T> Collection<T> convertToCollection(Object obj, Class<T> clazz) {
+        return convertToStream(obj, clazz).toList();
+    }
 
     public static Stream<Object> convertToStream(Object obj) {
         return convertToStream(obj, Object.class);
