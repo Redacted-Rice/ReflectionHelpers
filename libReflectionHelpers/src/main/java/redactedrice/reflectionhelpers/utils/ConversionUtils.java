@@ -70,12 +70,30 @@ public class ConversionUtils {
     public static Stream<Object> convertToStream(Object obj) {
         return convertToStream(obj, Object.class);
     }
+    
+    public static Stream<Object> convertToStreamOrNull(Object obj) {
+        return convertToStreamOrNull(obj, Object.class);
+    }
 
     public static <T> Stream<T> convertToStream(Object obj, Class<T> clazz) {
         if (obj == null) {
             return Stream.empty();
         }
+        Stream<T> stream = convertToStreamCommon(obj, clazz);
+        if (stream != null) {
+            return stream;
+        }
+    	return clazz.isInstance(obj) ? Stream.of(clazz.cast(obj)) : Stream.empty();
+    }
+    
+    public static <T> Stream<T> convertToStreamOrNull(Object obj, Class<T> clazz) {
+        if (obj == null) {
+            return null;
+        }
+        return convertToStreamCommon(obj, clazz);
+    }
 
+    public static <T> Stream<T> convertToStreamCommon(Object obj, Class<T> clazz) {
         if (obj instanceof Stream<?> asStream) {
             return asStream.filter(clazz::isInstance).map(clazz::cast);
         }
@@ -91,8 +109,7 @@ public class ConversionUtils {
         if (obj.getClass().isArray()) {
             return convertArrayToStream(obj, clazz);
         }
-
-        return clazz.isInstance(obj) ? Stream.of(clazz.cast(obj)) : Stream.empty();
+        return null;
     }
 
     public static <T> Stream<T> convertArrayToStream(T[] array) {
