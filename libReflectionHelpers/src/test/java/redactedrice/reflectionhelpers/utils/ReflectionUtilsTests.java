@@ -27,14 +27,14 @@ class ReflectionUtilsTests {
         so.list.add(3);
 
         // primative
-        assertEquals(expected, ReflectionUtils.getVariable(so, "intField"));
-        assertEquals(expected, ReflectionUtils.getVariable(so, "getIntField()"));
+        assertEquals(expected, FunctionUtils.getVariable(so, "intField"));
+        assertEquals(expected, FunctionUtils.getVariable(so, "getIntField()"));
 
         // List
-        assertEquals(so.list, ReflectionUtils.getVariable(so, "list"));
-        assertEquals(so.list, ReflectionUtils.getVariable(so, "getList()"));
+        assertEquals(so.list, FunctionUtils.getVariable(so, "list"));
+        assertEquals(so.list, FunctionUtils.getVariable(so, "getList()"));
 
-        assertNull(ReflectionUtils.getVariable(so, "obj"));
+        assertNull(FunctionUtils.getVariable(so, "obj"));
     }
 
     @Test
@@ -48,38 +48,38 @@ class ReflectionUtilsTests {
         so.obj = so2;
         so2.obj = so;
 
-        assertEquals(expectedSo2, ReflectionUtils.getVariable(so, "obj.intField"));
-        assertEquals(expectedSo, ReflectionUtils.getVariable(so, "obj.obj.getObj().obj.intField"));
+        assertEquals(expectedSo2, FunctionUtils.getVariable(so, "obj.intField"));
+        assertEquals(expectedSo, FunctionUtils.getVariable(so, "obj.obj.getObj().obj.intField"));
         assertEquals(expectedSo2,
-                ReflectionUtils.getVariable(so, "getObj().getObj().obj.getIntField()"));
+                FunctionUtils.getVariable(so, "getObj().getObj().obj.getIntField()"));
     }
 
     @Test
     void getVariable_badInputs() {
         SimpleObject so = new SimpleObject("test obj", 3);
 
-        assertThrows(NoSuchFieldException.class, () -> ReflectionUtils.getVariable(so, ""));
-        assertThrows(NoSuchFieldException.class, () -> ReflectionUtils.getVariable(so, "unfound"));
+        assertThrows(NoSuchFieldException.class, () -> FunctionUtils.getVariable(so, ""));
+        assertThrows(NoSuchFieldException.class, () -> FunctionUtils.getVariable(so, "unfound"));
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.getVariable(so, "unfound()"));
+                () -> FunctionUtils.getVariable(so, "unfound()"));
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.getVariable(so, "uncomparableObj()"));
+                () -> FunctionUtils.getVariable(so, "uncomparableObj()"));
         assertThrows(NoSuchFieldException.class,
-                () -> ReflectionUtils.getVariable(so, "getUncomparableObject"));
+                () -> FunctionUtils.getVariable(so, "getUncomparableObject"));
 
         assertThrows(NullPointerException.class,
-                () -> ReflectionUtils.getVariable(so, "obj.unfound.unfound2"));
+                () -> FunctionUtils.getVariable(so, "obj.unfound.unfound2"));
 
         so.obj = new SimpleObject("test obj2", 0);
         so.obj.obj = so;
 
         assertThrows(NoSuchFieldException.class,
-                () -> ReflectionUtils.getVariable(so, "obj.unfound.unfound2"));
+                () -> FunctionUtils.getVariable(so, "obj.unfound.unfound2"));
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.getVariable(so, "obj.unfound()"));
+                () -> FunctionUtils.getVariable(so, "obj.unfound()"));
 
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.getVariable(so, "getObj().obj.intIsEqualTo()"));
+                () -> FunctionUtils.getVariable(so, "getObj().obj.intIsEqualTo()"));
     }
 
     @Test
@@ -94,16 +94,16 @@ class ReflectionUtilsTests {
         so.map.put(5, "15");
 
         // get a single field
-        List<?> fieldStreamArray = ReflectionUtils.getVariableStream(so, "intField").toList();
+        List<?> fieldStreamArray = FunctionUtils.getVariableStream(so, "intField").toList();
         assertEquals(1, fieldStreamArray.size());
         assertEquals(3, fieldStreamArray.get(0));
 
         // collections/maps
-        assertIterableEquals(so.list, ReflectionUtils.getVariableStream(so, "list").toList());
+        assertIterableEquals(so.list, FunctionUtils.getVariableStream(so, "list").toList());
         assertIterableEquals(so.map.values(),
-                ReflectionUtils.getVariableStream(so, "map").toList());
+                FunctionUtils.getVariableStream(so, "map").toList());
         assertIterableEquals(so.map.keySet(),
-                ReflectionUtils.getVariableStream(so, "map.keySet()").toList());
+                FunctionUtils.getVariableStream(so, "map.keySet()").toList());
     }
 
     @Test
@@ -118,9 +118,9 @@ class ReflectionUtilsTests {
         so.map.put(5, "15");
 
         assertIterableEquals(so.map.keySet(),
-                ReflectionUtils.getMapVariableKeysStream(so, "map").toList());
+                FunctionUtils.getMapVariableKeysStream(so, "map").toList());
         assertIterableEquals(so.map.values(),
-                ReflectionUtils.getMapVariableValuesStream(so, "map").toList());
+                FunctionUtils.getMapVariableValuesStream(so, "map").toList());
     }
 
     @Test
@@ -135,15 +135,15 @@ class ReflectionUtilsTests {
 
         // Non map
         assertThrows(ClassCastException.class,
-                () -> ReflectionUtils.getMapVariableKeysStream(so, "list"));
+                () -> FunctionUtils.getMapVariableKeysStream(so, "list"));
         assertThrows(ClassCastException.class,
-                () -> ReflectionUtils.getMapVariableKeysStream(so, "intField"));
+                () -> FunctionUtils.getMapVariableKeysStream(so, "intField"));
         assertThrows(NoSuchFieldException.class,
-                () -> ReflectionUtils.getMapVariableKeysStream(so, "unused"));
+                () -> FunctionUtils.getMapVariableKeysStream(so, "unused"));
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.getMapVariableKeysStream(so, "list()"));
+                () -> FunctionUtils.getMapVariableKeysStream(so, "list()"));
         assertThrows(NullPointerException.class,
-                () -> ReflectionUtils.getMapVariableKeysStream(so, "obj.unused"));
+                () -> FunctionUtils.getMapVariableKeysStream(so, "obj.unused"));
     }
 
     @Test
@@ -159,19 +159,19 @@ class ReflectionUtilsTests {
         so.stringField = "test";
 
         // primative
-        assertEquals(expected, ReflectionUtils.getFromGetter(so, "intField"));
-        assertEquals(so.stringField, ReflectionUtils.getFromGetter(so, "stringField"));
-        assertEquals(so.boolField, ReflectionUtils.getFromGetter(so, "boolField"));
+        assertEquals(expected, FunctionUtils.getFromGetter(so, "intField"));
+        assertEquals(so.stringField, FunctionUtils.getFromGetter(so, "stringField"));
+        assertEquals(so.boolField, FunctionUtils.getFromGetter(so, "boolField"));
 
         // List
-        assertEquals(so.list, ReflectionUtils.getFromGetter(so, "list"));
+        assertEquals(so.list, FunctionUtils.getFromGetter(so, "list"));
 
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.getFromGetter(so, "stringNoGetter"));
+                () -> FunctionUtils.getFromGetter(so, "stringNoGetter"));
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.getFromGetter(so, "getIntField"));
+                () -> FunctionUtils.getFromGetter(so, "getIntField"));
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.getFromGetter(so, "getIntField()"));
+                () -> FunctionUtils.getFromGetter(so, "getIntField()"));
     }
 
     @Test
@@ -189,21 +189,21 @@ class ReflectionUtilsTests {
         so.setIntPrivate(expected);
 
         // primative
-        assertEquals(expected, ReflectionUtils.getFromField(so, "intField"));
-        assertEquals(so.stringField, ReflectionUtils.getFromField(so, "stringField"));
+        assertEquals(expected, FunctionUtils.getFromField(so, "intField"));
+        assertEquals(so.stringField, FunctionUtils.getFromField(so, "stringField"));
         assertEquals(so.stringNoGetterSetter,
-                ReflectionUtils.getFromField(so, "stringNoGetterSetter"));
-        assertNull(ReflectionUtils.getFromField(so, "obj"));
+                FunctionUtils.getFromField(so, "stringNoGetterSetter"));
+        assertNull(FunctionUtils.getFromField(so, "obj"));
 
         // List
-        assertEquals(so.list, ReflectionUtils.getFromField(so, "list"));
+        assertEquals(so.list, FunctionUtils.getFromField(so, "list"));
 
         assertThrows(NoSuchFieldException.class,
-                () -> ReflectionUtils.getFromField(so, "intPrivate"));
+                () -> FunctionUtils.getFromField(so, "intPrivate"));
         assertThrows(NoSuchFieldException.class,
-                () -> ReflectionUtils.getFromField(so, "getIntField"));
+                () -> FunctionUtils.getFromField(so, "getIntField"));
         assertThrows(NoSuchFieldException.class,
-                () -> ReflectionUtils.getFromField(so, "getIntField()"));
+                () -> FunctionUtils.getFromField(so, "getIntField()"));
 
     }
 
@@ -214,34 +214,34 @@ class ReflectionUtilsTests {
         SimpleObject so = new SimpleObject("test obj", 3);
 
         // objects
-        assertNull(ReflectionUtils.setVariable(so, "stringField", "1"));
+        assertNull(FunctionUtils.setVariable(so, "stringField", "1"));
         assertEquals("1", so.stringField);
-        assertNull(ReflectionUtils.setVariable(so, "setStringField()", "2"));
+        assertNull(FunctionUtils.setVariable(so, "setStringField()", "2"));
         assertEquals("2", so.stringField);
 
         // object null value
-        assertNull(ReflectionUtils.setVariable(so, "stringField", null));
+        assertNull(FunctionUtils.setVariable(so, "stringField", null));
         assertNull(so.stringField);
-        assertNull(ReflectionUtils.setVariable(so, "setStringField()", null));
+        assertNull(FunctionUtils.setVariable(so, "setStringField()", null));
         assertNull(so.stringField);
 
         // primitives
-        assertNull(ReflectionUtils.setVariable(so, "intField", 2));
+        assertNull(FunctionUtils.setVariable(so, "intField", 2));
         assertEquals(2, so.intField);
-        assertNull(ReflectionUtils.setVariable(so, "setIntField()", 1));
+        assertNull(FunctionUtils.setVariable(so, "setIntField()", 1));
         assertEquals(1, so.intField);
 
         // Test return vals
-        assertTrue((boolean) ReflectionUtils.setVariable(so, "setIntFieldReturn()", 7));
+        assertTrue((boolean) FunctionUtils.setVariable(so, "setIntFieldReturn()", 7));
         assertEquals(7, so.intField);
-        assertFalse((boolean) ReflectionUtils.setVariable(so, "setIntFieldReturn()", -4));
+        assertFalse((boolean) FunctionUtils.setVariable(so, "setIntFieldReturn()", -4));
         assertEquals(-4, so.intField); // sets anyway
 
-        assertTrue((boolean) ReflectionUtils.setVariable(so, "setIntFieldReturnBoxed()", 6));
+        assertTrue((boolean) FunctionUtils.setVariable(so, "setIntFieldReturnBoxed()", 6));
         assertEquals(6, so.intField);
-        assertNull(ReflectionUtils.setVariable(so, "setIntFieldReturnBoxed()", 0)); // returns null
+        assertNull(FunctionUtils.setVariable(so, "setIntFieldReturnBoxed()", 0)); // returns null
         assertEquals(0, so.intField); // sets anyway
-        assertFalse((boolean) ReflectionUtils.setVariable(so, "setIntFieldReturnBoxed()", -2));
+        assertFalse((boolean) FunctionUtils.setVariable(so, "setIntFieldReturnBoxed()", -2));
         assertEquals(-2, so.intField); // sets anyway
     }
 
@@ -254,15 +254,15 @@ class ReflectionUtilsTests {
         so.obj.obj = so;
 
         // objects
-        assertNull(ReflectionUtils.setVariable(so, "obj.obj.stringField", "1"));
+        assertNull(FunctionUtils.setVariable(so, "obj.obj.stringField", "1"));
         assertEquals("1", so.stringField);
-        assertNull(ReflectionUtils.setVariable(so, "obj.obj.setStringField()", "2"));
+        assertNull(FunctionUtils.setVariable(so, "obj.obj.setStringField()", "2"));
         assertEquals("2", so.stringField);
 
         // primitives
-        assertNull(ReflectionUtils.setVariable(so, "obj.obj.intField", 2));
+        assertNull(FunctionUtils.setVariable(so, "obj.obj.intField", 2));
         assertEquals(2, so.intField);
-        assertNull(ReflectionUtils.setVariable(so, "obj.obj.setIntField()", 1));
+        assertNull(FunctionUtils.setVariable(so, "obj.obj.setIntField()", 1));
         assertEquals(1, so.intField);
     }
 
@@ -271,39 +271,39 @@ class ReflectionUtilsTests {
         SimpleObject so = new SimpleObject("test obj", 3);
 
         assertThrows(NullPointerException.class,
-                () -> ReflectionUtils.setVariable(so, "obj.unused", "2"));
+                () -> FunctionUtils.setVariable(so, "obj.unused", "2"));
 
         so.obj = new SimpleObject("test obj2", 1);
         so.obj.obj = so;
 
         assertThrows(NoSuchFieldException.class,
-                () -> ReflectionUtils.setVariable(so, "unused", "2"));
+                () -> FunctionUtils.setVariable(so, "unused", "2"));
         assertThrows(NoSuchFieldException.class,
-                () -> ReflectionUtils.setVariable(so, "obj.unused", "2"));
+                () -> FunctionUtils.setVariable(so, "obj.unused", "2"));
         assertThrows(NoSuchFieldException.class,
-                () -> ReflectionUtils.setVariable(so, "obj.recurse.unused", "2"));
+                () -> FunctionUtils.setVariable(so, "obj.recurse.unused", "2"));
 
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.setVariable(so, "obj()", "2"));
+                () -> FunctionUtils.setVariable(so, "obj()", "2"));
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.setVariable(so, "obj.obj.unused()", "2"));
+                () -> FunctionUtils.setVariable(so, "obj.obj.unused()", "2"));
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.setVariable(so, "getIntField()", "2")); // wrong
+                () -> FunctionUtils.setVariable(so, "getIntField()", "2")); // wrong
         // params
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.setVariable(so, "getIntField()", null)); // wrong
+                () -> FunctionUtils.setVariable(so, "getIntField()", null)); // wrong
         // params
 
         assertThrows(IllegalArgumentException.class,
-                () -> ReflectionUtils.setVariable(so, "intField", "2")); // param
+                () -> FunctionUtils.setVariable(so, "intField", "2")); // param
         // of
         // wrong
         // type
 
         assertThrows(IllegalArgumentException.class,
-                () -> ReflectionUtils.setVariable(so, "stringField", 2));
+                () -> FunctionUtils.setVariable(so, "stringField", 2));
         assertThrows(IllegalArgumentException.class,
-                () -> ReflectionUtils.setVariable(so, "intField", null)); // null
+                () -> FunctionUtils.setVariable(so, "intField", null)); // null
         // val
         // for
         // primitive
@@ -316,26 +316,26 @@ class ReflectionUtilsTests {
         SimpleObject so = new SimpleObject("test obj", 3);
 
         // objects
-        ReflectionUtils.setWithSetter(so, "stringField", "1");
+        FunctionUtils.setWithSetter(so, "stringField", "1");
         assertEquals("1", so.stringField);
         // objects
-        ReflectionUtils.setWithSetter(so, "stringField", "2");
+        FunctionUtils.setWithSetter(so, "stringField", "2");
         assertEquals("2", so.stringField);
-        ReflectionUtils.setWithSetter(so, "stringField", null);
+        FunctionUtils.setWithSetter(so, "stringField", null);
         assertNull(so.stringField);
 
         // primitives
-        ReflectionUtils.setWithSetter(so, "intField", 2);
+        FunctionUtils.setWithSetter(so, "intField", 2);
         assertEquals(2, so.intField);
-        ReflectionUtils.setWithSetter(so, "intField", 2);
+        FunctionUtils.setWithSetter(so, "intField", 2);
         assertEquals(2, so.intField);
-        ReflectionUtils.setWithSetter(so, "boolSetterWithNoSet", true);
+        FunctionUtils.setWithSetter(so, "boolSetterWithNoSet", true);
         assertTrue(so.boolSetterWithNoSet);
 
         String expected = "Some Value";
         so.stringNoGetterSetter = expected;
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.setWithSetter(so, "stringNoGetterSetter", "test"));
+                () -> FunctionUtils.setWithSetter(so, "stringNoGetterSetter", "test"));
         assertEquals(expected, so.stringNoGetterSetter);
     }
 
@@ -346,31 +346,31 @@ class ReflectionUtilsTests {
         SimpleObject so = new SimpleObject("test obj", 3);
 
         // objects
-        assertNull(ReflectionUtils.invoke(so, "setStringField()", "2"));
+        assertNull(FunctionUtils.invoke(so, "setStringField()", "2"));
         assertEquals("2", so.stringField);
-        assertEquals("2", ReflectionUtils.invoke(so, "getStringField()"));
+        assertEquals("2", FunctionUtils.invoke(so, "getStringField()"));
 
         // object null value
-        assertNull(ReflectionUtils.invoke(so, "setStringField()", (String) null));
+        assertNull(FunctionUtils.invoke(so, "setStringField()", (String) null));
         assertNull(so.stringField);
 
         // primitives
-        assertNull(ReflectionUtils.invoke(so, "setIntField()", 1));
+        assertNull(FunctionUtils.invoke(so, "setIntField()", 1));
         assertEquals(1, so.intField);
-        assertEquals(1, ReflectionUtils.invoke(so, "getIntField()"));
+        assertEquals(1, FunctionUtils.invoke(so, "getIntField()"));
         // Test passing an empty array of args
-        assertEquals(1, ReflectionUtils.invoke(so, "getIntField()", new Object[] {}));
+        assertEquals(1, FunctionUtils.invoke(so, "getIntField()", new Object[] {}));
 
         // Test return vals
-        assertTrue((boolean) ReflectionUtils.invoke(so, "setIntFieldReturn()", 7));
+        assertTrue((boolean) FunctionUtils.invoke(so, "setIntFieldReturn()", 7));
         assertEquals(7, so.intField);
-        assertFalse((boolean) ReflectionUtils.invoke(so, "setIntFieldReturn()", -4));
+        assertFalse((boolean) FunctionUtils.invoke(so, "setIntFieldReturn()", -4));
         assertEquals(-4, so.intField); // sets anyway
-        assertNull(ReflectionUtils.invoke(so, "setIntFieldReturnBoxed()", 0)); // returns null
+        assertNull(FunctionUtils.invoke(so, "setIntFieldReturnBoxed()", 0)); // returns null
         assertEquals(0, so.intField); // sets anyway
 
         // multi args
-        assertNull(ReflectionUtils.invoke(so, "setIntAndStringField()", 2, "multi")); // returns
+        assertNull(FunctionUtils.invoke(so, "setIntAndStringField()", 2, "multi")); // returns
                                                                                       // null
         assertEquals(2, so.intField); // sets anyway
         assertEquals("multi", so.stringField); // sets anyway
@@ -385,17 +385,17 @@ class ReflectionUtilsTests {
         so.obj.obj = so;
 
         // objects
-        assertNull(ReflectionUtils.invoke(so, "obj.obj.setStringField()", "2"));
+        assertNull(FunctionUtils.invoke(so, "obj.obj.setStringField()", "2"));
         assertEquals("2", so.stringField);
-        assertEquals("2", ReflectionUtils.invoke(so, "getStringField()"));
+        assertEquals("2", FunctionUtils.invoke(so, "getStringField()"));
 
         // primitives
-        assertNull(ReflectionUtils.invoke(so, "obj.obj.setIntField()", 1));
+        assertNull(FunctionUtils.invoke(so, "obj.obj.setIntField()", 1));
         assertEquals(1, so.intField);
-        assertEquals(1, ReflectionUtils.invoke(so, "getIntField()"));
+        assertEquals(1, FunctionUtils.invoke(so, "getIntField()"));
 
         // multi args
-        assertNull(ReflectionUtils.invoke(so, "getObj().obj.setIntAndStringField()", 2, "multi")); // returns
+        assertNull(FunctionUtils.invoke(so, "getObj().obj.setIntAndStringField()", 2, "multi")); // returns
         // null
         assertEquals(2, so.intField); // sets anyway
         assertEquals("multi", so.stringField); // sets anyway
@@ -408,14 +408,14 @@ class ReflectionUtilsTests {
         SimpleObject so = new SimpleObject("test obj", 3);
 
         // objects
-        assertNull(ReflectionUtils.invoke(so, "setField()", "2"));
+        assertNull(FunctionUtils.invoke(so, "setField()", "2"));
         assertEquals("2", so.stringField);
-        assertEquals("2", ReflectionUtils.invoke(so, "getStringField()"));
+        assertEquals("2", FunctionUtils.invoke(so, "getStringField()"));
 
         // primitives
-        assertNull(ReflectionUtils.invoke(so, "setField()", 1));
+        assertNull(FunctionUtils.invoke(so, "setField()", 1));
         assertEquals(1, so.intField);
-        assertEquals(1, ReflectionUtils.invoke(so, "getIntField()"));
+        assertEquals(1, FunctionUtils.invoke(so, "getIntField()"));
     }
 
     @Test
@@ -423,16 +423,16 @@ class ReflectionUtilsTests {
         SimpleObject so = new SimpleObject("test obj", 3);
 
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.invoke(so, "setVariable()", 2, "3"));
+                () -> FunctionUtils.invoke(so, "setVariable()", 2, "3"));
         assertThrows(IllegalArgumentException.class,
-                () -> ReflectionUtils.invoke(so, "setVariable", 2));
+                () -> FunctionUtils.invoke(so, "setVariable", 2));
 
         // null for primitive arg
         assertThrows(IllegalArgumentException.class,
-                () -> ReflectionUtils.invoke(so, "setIntField()", (Integer) null));
+                () -> FunctionUtils.invoke(so, "setIntField()", (Integer) null));
 
         // wrong primitive to test all branches
         assertThrows(NoSuchMethodException.class,
-                () -> ReflectionUtils.invoke(so, "setVariable()", 2.1));
+                () -> FunctionUtils.invoke(so, "setVariable()", 2.1));
     }
 }

@@ -4,7 +4,7 @@ package redactedrice.reflectionhelpers.objects;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
-import redactedrice.reflectionhelpers.utils.ReflectionUtils;
+import redactedrice.reflectionhelpers.utils.FunctionUtils;
 
 // A wrapper for extending an existing objects dynamically in code
 public class ExtendableObject {
@@ -30,12 +30,12 @@ public class ExtendableObject {
 
     public Object eoGet(String fieldName) {
         try {
-            return ReflectionUtils.getFromGetter(obj, fieldName);
+            return FunctionUtils.getFromGetter(obj, fieldName);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
         	// Not a method, try as a field
         }
         try {
-            return ReflectionUtils.getFromField(obj, fieldName);
+            return FunctionUtils.getFromField(obj, fieldName);
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
                 | SecurityException e) {
         	// Not a field, fall through to try the extended field
@@ -68,13 +68,13 @@ public class ExtendableObject {
 
     protected boolean setInternal(String fieldName, Object val) {
         try {
-            ReflectionUtils.setWithSetter(obj, fieldName, val);
+            FunctionUtils.setWithSetter(obj, fieldName, val);
             return true;
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
         	// Not a method, try as a field
         }
         try {
-            ReflectionUtils.setWithField(obj, fieldName, val);
+            FunctionUtils.setWithField(obj, fieldName, val);
             return true;
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
                 | SecurityException e) {

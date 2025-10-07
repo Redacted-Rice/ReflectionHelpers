@@ -7,8 +7,8 @@ import java.lang.reflect.Parameter;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class ReflectionUtils {
-    private ReflectionUtils() {
+public class FunctionUtils {
+    private FunctionUtils() {
         throw new IllegalStateException("No constructor - utility class");
     }
 

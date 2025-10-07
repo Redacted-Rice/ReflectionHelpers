@@ -13,7 +13,7 @@ import static org.mockito.Mockito.spy;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-import redactedrice.reflectionhelpers.utils.ReflectionUtils;
+import redactedrice.reflectionhelpers.utils.FunctionUtils;
 import support.SimpleObject;
 
 class ExtendedObjectTests {
@@ -57,18 +57,18 @@ class ExtendedObjectTests {
         SimpleObject so = new SimpleObject("test obj", 3);
         ExtendableObject eo = ExtendableObject.create(so);
 
-        try (MockedStatic<ReflectionUtils> mocked = mockStatic(ReflectionUtils.class)) {
-            mocked.when(() -> ReflectionUtils.getFromGetter(any(), any())).thenReturn(EXPECTED);
+        try (MockedStatic<FunctionUtils> mocked = mockStatic(FunctionUtils.class)) {
+            mocked.when(() -> FunctionUtils.getFromGetter(any(), any())).thenReturn(EXPECTED);
             assertEquals(EXPECTED, eo.eoGet(FIELD));
             assertEquals(EXPECTED, eo.eoGet(FIELD, DEFAULT));
 
-            mocked.when(() -> ReflectionUtils.getFromGetter(any(), any()))
+            mocked.when(() -> FunctionUtils.getFromGetter(any(), any()))
                     .thenThrow(new NoSuchMethodException());
-            mocked.when(() -> ReflectionUtils.getFromField(any(), any())).thenReturn(EXPECTED);
+            mocked.when(() -> FunctionUtils.getFromField(any(), any())).thenReturn(EXPECTED);
             assertEquals(EXPECTED, eo.eoGet(FIELD));
             assertEquals(EXPECTED, eo.eoGet(FIELD, DEFAULT));
 
-            mocked.when(() -> ReflectionUtils.getFromField(any(), any()))
+            mocked.when(() -> FunctionUtils.getFromField(any(), any()))
                     .thenThrow(new NoSuchFieldException());
             assertNull(eo.eoGet(FIELD));
             assertEquals(DEFAULT, eo.eoGet(FIELD, DEFAULT));
@@ -115,15 +115,15 @@ class ExtendedObjectTests {
         SimpleObject so = new SimpleObject("test obj", 3);
         ExtendableObject eo = spy(ExtendableObject.create(so));
 
-        try (MockedStatic<ReflectionUtils> mocked = mockStatic(ReflectionUtils.class)) {
-            mocked.when(() -> ReflectionUtils.setWithSetter(any(), any(), any())).thenAnswer(invocation -> null);
+        try (MockedStatic<FunctionUtils> mocked = mockStatic(FunctionUtils.class)) {
+            mocked.when(() -> FunctionUtils.setWithSetter(any(), any(), any())).thenAnswer(invocation -> null);
             assertTrue(eo.setInternal(FIELD, EXPECTED));
 
-            mocked.when(() -> ReflectionUtils.setWithSetter(any(), any(), any())).thenThrow(new NoSuchMethodException());
-            mocked.when(() -> ReflectionUtils.setWithField(any(), any(), any())).thenAnswer(invocation -> null);
+            mocked.when(() -> FunctionUtils.setWithSetter(any(), any(), any())).thenThrow(new NoSuchMethodException());
+            mocked.when(() -> FunctionUtils.setWithField(any(), any(), any())).thenAnswer(invocation -> null);
             assertTrue(eo.setInternal(FIELD, EXPECTED));
 
-            mocked.when(() -> ReflectionUtils.setWithField(any(), any(), any())).thenThrow(new NoSuchFieldException());
+            mocked.when(() -> FunctionUtils.setWithField(any(), any(), any())).thenThrow(new NoSuchFieldException());
             assertFalse(eo.setInternal(FIELD, EXPECTED));
         }
     }
