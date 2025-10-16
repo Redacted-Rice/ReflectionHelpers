@@ -61,16 +61,15 @@ public class FunctionUtils {
             getter = tryGetMethodByName(obj, "is" + capitalized);
         }
         if (getter == null) {
-            throw new NoSuchMethodException("Did not find appropriate getter for get" + 
-            			capitalized + " or is" + capitalized);
+            throw new NoSuchMethodException("Did not find appropriate getter for get" + capitalized
+                    + " or is" + capitalized);
         }
 
         return getter.invoke(obj);
     }
 
-    public static Object getFromField(Object obj, String fieldName) 
-    		throws IllegalArgumentException, IllegalAccessException, 
-    		NoSuchFieldException, SecurityException  {
+    public static Object getFromField(Object obj, String fieldName) throws IllegalArgumentException,
+            IllegalAccessException, NoSuchFieldException, SecurityException {
         return obj.getClass().getField(fieldName).get(obj);
     }
 
@@ -92,8 +91,8 @@ public class FunctionUtils {
             return method.invoke(owningObj, values);
         } else {
             // Not a function. Should use setField instead
-            throw new IllegalArgumentException("Did not pass a function - \"" + pathToMethod + 
-            		"\". Should end with () or if its not a function should use get/setField instead");
+            throw new IllegalArgumentException("Did not pass a function - \"" + pathToMethod
+                    + "\". Should end with () or if its not a function should use get/setField instead");
         }
     }
 
@@ -128,8 +127,8 @@ public class FunctionUtils {
             setter = tryGetMethodByName(obj, fieldName, val);
         }
         if (setter == null) {
-            throw new NoSuchMethodException("Did not find appropriate setter for set" + 
-        			capitalized + " or " + fieldName);
+            throw new NoSuchMethodException(
+                    "Did not find appropriate setter for set" + capitalized + " or " + fieldName);
         }
         setter.invoke(obj, val);
     }
@@ -137,8 +136,8 @@ public class FunctionUtils {
     public static void setWithField(Object obj, String fieldName, Object val)
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException,
             SecurityException {
-    	// getField only returns public functions. This is incorrectly tagged as an
-    	// accessibility bypass by SonarQube
+        // getField only returns public functions. This is incorrectly tagged as an
+        // accessibility bypass by SonarQube
         obj.getClass().getField(fieldName).set(obj, val); // NOSONAR
     }
 

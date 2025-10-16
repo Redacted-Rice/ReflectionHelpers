@@ -60,8 +60,7 @@ class FunctionUtilsTests {
 
         assertThrows(NoSuchFieldException.class, () -> FunctionUtils.getVariable(so, ""));
         assertThrows(NoSuchFieldException.class, () -> FunctionUtils.getVariable(so, "unfound"));
-        assertThrows(NoSuchMethodException.class,
-                () -> FunctionUtils.getVariable(so, "unfound()"));
+        assertThrows(NoSuchMethodException.class, () -> FunctionUtils.getVariable(so, "unfound()"));
         assertThrows(NoSuchMethodException.class,
                 () -> FunctionUtils.getVariable(so, "uncomparableObj()"));
         assertThrows(NoSuchFieldException.class,
@@ -100,8 +99,7 @@ class FunctionUtilsTests {
 
         // collections/maps
         assertIterableEquals(so.list, FunctionUtils.getVariableStream(so, "list").toList());
-        assertIterableEquals(so.map.values(),
-                FunctionUtils.getVariableStream(so, "map").toList());
+        assertIterableEquals(so.map.values(), FunctionUtils.getVariableStream(so, "map").toList());
         assertIterableEquals(so.map.keySet(),
                 FunctionUtils.getVariableStream(so, "map.keySet()").toList());
     }
@@ -124,8 +122,7 @@ class FunctionUtilsTests {
     }
 
     @Test
-    void getMapVariableStream_badInputs()
-            throws IllegalArgumentException {
+    void getMapVariableStream_badInputs() throws IllegalArgumentException {
         SimpleObject so = new SimpleObject("test obj", 3);
         so.list.add(1);
         so.list.add(2);
@@ -147,9 +144,8 @@ class FunctionUtilsTests {
     }
 
     @Test
-    void getFromGetter()
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException {
+    void getFromGetter() throws IllegalAccessException, IllegalArgumentException,
+            InvocationTargetException, NoSuchMethodException, SecurityException {
         int expected = 3;
         SimpleObject so = new SimpleObject("test obj", 3);
         so.list.add(1);
@@ -175,8 +171,7 @@ class FunctionUtilsTests {
     }
 
     @Test
-    void getFromField()
-            throws SecurityException, NoSuchFieldException, IllegalArgumentException, 
+    void getFromField() throws SecurityException, NoSuchFieldException, IllegalArgumentException,
             IllegalAccessException {
         int expected = 3;
         SimpleObject so = new SimpleObject("test obj", 3);
@@ -310,9 +305,8 @@ class FunctionUtilsTests {
     }
 
     @Test
-    void setWithSetter()
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException {
+    void setWithSetter() throws IllegalAccessException, IllegalArgumentException,
+            InvocationTargetException, NoSuchMethodException, SecurityException {
         SimpleObject so = new SimpleObject("test obj", 3);
 
         // objects
@@ -371,7 +365,7 @@ class FunctionUtilsTests {
 
         // multi args
         assertNull(FunctionUtils.invoke(so, "setIntAndStringField()", 2, "multi")); // returns
-                                                                                      // null
+                                                                                    // null
         assertEquals(2, so.intField); // sets anyway
         assertEquals("multi", so.stringField); // sets anyway
     }

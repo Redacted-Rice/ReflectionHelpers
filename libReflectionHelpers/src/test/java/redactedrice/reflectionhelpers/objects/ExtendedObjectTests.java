@@ -87,7 +87,7 @@ class ExtendedObjectTests {
 
         SimpleObject so = new SimpleObject("test obj", 3);
         ExtendableObject eo = spy(ExtendableObject.create(so));
-        
+
         doReturn(true).when(eo).setInternal(any(), any());
         eo.eoSet(FIELD, EXPECTED);
         assertTrue(eo.attrMap.isEmpty());
@@ -104,9 +104,9 @@ class ExtendedObjectTests {
         assertTrue(eo.eoSetIfExists(FIELD, EXPECTED2));
         assertEquals(1, eo.attrMap.size());
         assertEquals(EXPECTED2, eo.attrMap.get(FIELD));
-        
+
     }
-    
+
     @Test
     void setInternal() {
         final String EXPECTED = "expected";
@@ -116,14 +116,18 @@ class ExtendedObjectTests {
         ExtendableObject eo = spy(ExtendableObject.create(so));
 
         try (MockedStatic<FunctionUtils> mocked = mockStatic(FunctionUtils.class)) {
-            mocked.when(() -> FunctionUtils.setWithSetter(any(), any(), any())).thenAnswer(invocation -> null);
+            mocked.when(() -> FunctionUtils.setWithSetter(any(), any(), any()))
+                    .thenAnswer(invocation -> null);
             assertTrue(eo.setInternal(FIELD, EXPECTED));
 
-            mocked.when(() -> FunctionUtils.setWithSetter(any(), any(), any())).thenThrow(new NoSuchMethodException());
-            mocked.when(() -> FunctionUtils.setWithField(any(), any(), any())).thenAnswer(invocation -> null);
+            mocked.when(() -> FunctionUtils.setWithSetter(any(), any(), any()))
+                    .thenThrow(new NoSuchMethodException());
+            mocked.when(() -> FunctionUtils.setWithField(any(), any(), any()))
+                    .thenAnswer(invocation -> null);
             assertTrue(eo.setInternal(FIELD, EXPECTED));
 
-            mocked.when(() -> FunctionUtils.setWithField(any(), any(), any())).thenThrow(new NoSuchFieldException());
+            mocked.when(() -> FunctionUtils.setWithField(any(), any(), any()))
+                    .thenThrow(new NoSuchFieldException());
             assertFalse(eo.setInternal(FIELD, EXPECTED));
         }
     }

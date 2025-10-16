@@ -11,7 +11,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-
 public class ConversionUtils {
     private ConversionUtils() {
         throw new IllegalStateException("No constructor - utility class");
@@ -63,9 +62,9 @@ public class ConversionUtils {
         }
         return null;
     }
-    
+
     public static Collection<Object> convertToCollection(Object obj) {
-    	return convertToCollection(obj, Object.class);
+        return convertToCollection(obj, Object.class);
     }
 
     public static <T> Collection<T> convertToCollection(Object obj, Class<T> clazz) {
@@ -73,12 +72,12 @@ public class ConversionUtils {
     }
 
     public static <T> Stream<T> emptyIfNull(Stream<T> stream) {
-    	if (stream == null) {
-    		return Stream.empty();
-    	}
-    	return stream;
+        if (stream == null) {
+            return Stream.empty();
+        }
+        return stream;
     }
-    
+
     public static Stream<Object> convertToStream(Object obj) {
         return convertToStream(obj, Object.class);
     }
@@ -91,28 +90,30 @@ public class ConversionUtils {
         if (stream != null) {
             return stream;
         }
-    	return clazz.isInstance(obj) ? Stream.of(clazz.cast(obj)) : Stream.empty();
+        return clazz.isInstance(obj) ? Stream.of(clazz.cast(obj)) : Stream.empty();
     }
-    
+
     public static Stream<Object> convertToStreamOrNull(Object obj) {
         return convertToStreamOrNull(obj, Object.class);
     }
-    
+
     public static <T> Stream<T> convertToStreamOrNull(Object obj, Class<T> clazz) {
         if (obj == null) {
             return null;
         }
-        
+
         Supplier<Stream<T>> supplier;
 
         if (obj instanceof Stream<?> asStream) {
             supplier = () -> asStream.filter(clazz::isInstance).map(clazz::cast);
         } else if (obj instanceof Collection<?>) {
-            supplier = () -> ((Collection<?>) obj).stream().filter(clazz::isInstance).map(clazz::cast);
+            supplier = () -> ((Collection<?>) obj).stream().filter(clazz::isInstance)
+                    .map(clazz::cast);
         } else if (obj instanceof Map<?, ?>) {
-            supplier = () -> ((Map<?, ?>) obj).values().stream().filter(clazz::isInstance).map(clazz::cast);
+            supplier = () -> ((Map<?, ?>) obj).values().stream().filter(clazz::isInstance)
+                    .map(clazz::cast);
         } else if (obj.getClass().isArray()) {
-             return convertArrayToStreamOrNull(obj, clazz);
+            return convertArrayToStreamOrNull(obj, clazz);
         } else {
             return null;
         }
@@ -123,25 +124,25 @@ public class ConversionUtils {
         }
 
         T first = iterator.next();
-        return Stream.concat(Stream.of(first), StreamSupport.stream(
-            Spliterators.spliteratorUnknownSize(iterator, 0), false));
+        return Stream.concat(Stream.of(first),
+                StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false));
     }
 
     public static <T> Stream<T> convertArrayToStream(T[] array) {
-    	return emptyIfNull(convertArrayToStreamOrNull(array));
+        return emptyIfNull(convertArrayToStreamOrNull(array));
     }
 
     public static <T> Stream<T> convertArrayToStream(Object array, Class<T> clazz) {
-    	return emptyIfNull(convertArrayToStreamOrNull(array, clazz));
+        return emptyIfNull(convertArrayToStreamOrNull(array, clazz));
     }
-    
+
     public static <T> Stream<T> convertArrayToStreamOrNull(T[] array) {
-    	if (array == null || array.length < 1) {
-    		return null;
-    	}
+        if (array == null || array.length < 1) {
+            return null;
+        }
         return Arrays.stream(array);
     }
-    
+
     // We do check the types for safety before casting
     @SuppressWarnings("unchecked")
     public static <T> Stream<T> convertArrayToStreamOrNull(Object array, Class<T> clazz) {
@@ -157,19 +158,19 @@ public class ConversionUtils {
             return convertPrimitiveArrayToStreamOrNull(array, clazz);
         } else {
             // We already ensured its a matching array. We can safely cast
-        	T[] asArray = (T[]) array;
-        	if (asArray.length < 1) {
-        		return null;
-        	}
+            T[] asArray = (T[]) array;
+            if (asArray.length < 1) {
+                return null;
+            }
             return Arrays.stream(asArray);
         }
     }
 
     public static <T> Stream<T> convertPrimitiveArrayToStream(Object primativeArray,
             Class<T> clazz) {
-    	return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primativeArray, clazz));
+        return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primativeArray, clazz));
     }
-    
+
     // Suppress unchecked warning - we do check first
     @SuppressWarnings("unchecked")
     public static <T> Stream<T> convertPrimitiveArrayToStreamOrNull(Object primativeArray,
@@ -207,92 +208,90 @@ public class ConversionUtils {
     }
 
     public static Stream<Byte> convertPrimitiveArrayToStream(byte... primitiveArray) {
-    	return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
-    }
-    
-    public static Stream<Byte> convertPrimitiveArrayToStreamOrNull(byte... primitiveArray) {
-    	if (primitiveArray.length < 1) {
-    		return null;
-    	}
-        return IntStream.range(0, primitiveArray.length).mapToObj(idx -> primitiveArray[idx]);
+        return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
     }
 
+    public static Stream<Byte> convertPrimitiveArrayToStreamOrNull(byte... primitiveArray) {
+        if (primitiveArray.length < 1) {
+            return null;
+        }
+        return IntStream.range(0, primitiveArray.length).mapToObj(idx -> primitiveArray[idx]);
+    }
 
     public static Stream<Short> convertPrimitiveArrayToStream(short... primitiveArray) {
-    	return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
-    }
-    
-    public static Stream<Short> convertPrimitiveArrayToStreamOrNull(short... primitiveArray) {
-    	if (primitiveArray.length < 1) {
-    		return null;
-    	}
-        return IntStream.range(0, primitiveArray.length).mapToObj(idx -> primitiveArray[idx]);
+        return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
     }
 
+    public static Stream<Short> convertPrimitiveArrayToStreamOrNull(short... primitiveArray) {
+        if (primitiveArray.length < 1) {
+            return null;
+        }
+        return IntStream.range(0, primitiveArray.length).mapToObj(idx -> primitiveArray[idx]);
+    }
 
     public static Stream<Integer> convertPrimitiveArrayToStream(int... primitiveArray) {
-    	return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
-    }
-    public static Stream<Integer> convertPrimitiveArrayToStreamOrNull(int... primitiveArray) {
-    	if (primitiveArray.length < 1) {
-    		return null;
-    	}
-        return Arrays.stream(primitiveArray).boxed();
+        return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
     }
 
+    public static Stream<Integer> convertPrimitiveArrayToStreamOrNull(int... primitiveArray) {
+        if (primitiveArray.length < 1) {
+            return null;
+        }
+        return Arrays.stream(primitiveArray).boxed();
+    }
 
     public static Stream<Long> convertPrimitiveArrayToStream(long... primitiveArray) {
-    	return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
-    }
-    public static Stream<Long> convertPrimitiveArrayToStreamOrNull(long... primitiveArray) {
-    	if (primitiveArray.length < 1) {
-    		return null;
-    	}
-        return IntStream.range(0, primitiveArray.length).mapToObj(idx -> primitiveArray[idx]);
+        return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
     }
 
+    public static Stream<Long> convertPrimitiveArrayToStreamOrNull(long... primitiveArray) {
+        if (primitiveArray.length < 1) {
+            return null;
+        }
+        return IntStream.range(0, primitiveArray.length).mapToObj(idx -> primitiveArray[idx]);
+    }
 
     public static Stream<Float> convertPrimitiveArrayToStream(float... primitiveArray) {
-    	return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
+        return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
     }
+
     public static Stream<Float> convertPrimitiveArrayToStreamOrNull(float... primitiveArray) {
-    	if (primitiveArray.length < 1) {
-    		return null;
-    	}
+        if (primitiveArray.length < 1) {
+            return null;
+        }
         return IntStream.range(0, primitiveArray.length).mapToObj(idx -> primitiveArray[idx]);
     }
 
-
     public static Stream<Double> convertPrimitiveArrayToStream(double... primitiveArray) {
-    	return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
+        return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
     }
+
     public static Stream<Double> convertPrimitiveArrayToStreamOrNull(double... primitiveArray) {
-    	if (primitiveArray.length < 1) {
-    		return null;
-    	}
+        if (primitiveArray.length < 1) {
+            return null;
+        }
         return Arrays.stream(primitiveArray).boxed();
     }
 
-
     public static Stream<Boolean> convertPrimitiveArrayToStream(boolean... primitiveArray) {
-    	return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
+        return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
     }
+
     public static Stream<Boolean> convertPrimitiveArrayToStreamOrNull(boolean... primitiveArray) {
-    	if (primitiveArray.length < 1) {
-    		return null;
-    	}
+        if (primitiveArray.length < 1) {
+            return null;
+        }
         return IntStream.range(0, primitiveArray.length).mapToObj(idx -> primitiveArray[idx]);
     }
 
-
     public static Stream<Character> convertPrimitiveArrayToStream(char... primitiveArray) {
-    	return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
+        return emptyIfNull(convertPrimitiveArrayToStreamOrNull(primitiveArray));
     }
-    
+
     public static Stream<Character> convertPrimitiveArrayToStreamOrNull(char... primitiveArray) {
-    	if (primitiveArray.length < 1) {
-    		return null;
-    	}
+        if (primitiveArray.length < 1) {
+            return null;
+        }
         return IntStream.range(0, primitiveArray.length).mapToObj(idx -> primitiveArray[idx]);
     }
 }
