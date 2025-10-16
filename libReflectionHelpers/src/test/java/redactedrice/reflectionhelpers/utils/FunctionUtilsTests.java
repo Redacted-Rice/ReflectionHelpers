@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import support.SimpleObject;
 
-class ReflectionUtilsTests {
+class FunctionUtilsTests {
     @Test
     void getVariable()
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,

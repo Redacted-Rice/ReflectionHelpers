@@ -80,11 +80,7 @@ public class ConversionUtils {
     }
     
     public static Stream<Object> convertToStream(Object obj) {
-        return emptyIfNull(convertToStreamOrNull(obj, Object.class));
-    }
-    
-    public static Stream<Object> convertToStreamOrNull(Object obj) {
-        return convertToStreamOrNull(obj, Object.class);
+        return convertToStream(obj, Object.class);
     }
 
     public static <T> Stream<T> convertToStream(Object obj, Class<T> clazz) {
@@ -96,6 +92,10 @@ public class ConversionUtils {
             return stream;
         }
     	return clazz.isInstance(obj) ? Stream.of(clazz.cast(obj)) : Stream.empty();
+    }
+    
+    public static Stream<Object> convertToStreamOrNull(Object obj) {
+        return convertToStreamOrNull(obj, Object.class);
     }
     
     public static <T> Stream<T> convertToStreamOrNull(Object obj, Class<T> clazz) {
@@ -128,11 +128,18 @@ public class ConversionUtils {
     }
 
     public static <T> Stream<T> convertArrayToStream(T[] array) {
-        return Arrays.stream(array);
+    	return emptyIfNull(convertArrayToStreamOrNull(array));
     }
 
     public static <T> Stream<T> convertArrayToStream(Object array, Class<T> clazz) {
     	return emptyIfNull(convertArrayToStreamOrNull(array, clazz));
+    }
+    
+    public static <T> Stream<T> convertArrayToStreamOrNull(T[] array) {
+    	if (array == null || array.length < 1) {
+    		return null;
+    	}
+        return Arrays.stream(array);
     }
     
     // We do check the types for safety before casting
@@ -195,6 +202,7 @@ public class ConversionUtils {
         } else if (primType == char.class) {
             return (Stream<T>) convertPrimitiveArrayToStreamOrNull((char[]) primativeArray);
         }
+        // Shouldn't ever get here - assignable from doesn't work for wrappers
         return null;
     }
 
