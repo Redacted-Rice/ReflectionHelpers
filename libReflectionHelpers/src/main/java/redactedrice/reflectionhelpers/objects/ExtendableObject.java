@@ -32,13 +32,13 @@ public class ExtendableObject {
         try {
             return FunctionUtils.getFromGetter(obj, fieldName);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-        	// Not a method, try as a field
+            // Not a method, try as a field
         }
         try {
             return FunctionUtils.getFromField(obj, fieldName);
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
                 | SecurityException e) {
-        	// Not a field, fall through to try the extended field
+            // Not a field, fall through to try the extended field
         }
         return attrMap.get(fieldName);
     }
@@ -71,14 +71,14 @@ public class ExtendableObject {
             FunctionUtils.setWithSetter(obj, fieldName, val);
             return true;
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-        	// Not a method, try as a field
+            // Not a method, try as a field
         }
         try {
             FunctionUtils.setWithField(obj, fieldName, val);
             return true;
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
                 | SecurityException e) {
-        	// Not a field, fall through which just returns false
+            // Not a field, fall through which just returns false
         }
         return false;
     }
